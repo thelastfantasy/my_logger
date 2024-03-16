@@ -2,16 +2,12 @@ use chrono::Local;
 use env_logger::Builder as LoggerBuilder;
 use std::io::Write;
 
-pub fn setup_logger() {
+pub fn init() {
     LoggerBuilder::new()
         .format(|buf, record| {
             let level_style = buf.default_level_style(record.level());
             let reset = level_style.render_reset();
             let level_style = level_style.render();
-
-            // let error_style = buf.default_level_style(log::Level::Error);
-            // let error_reset = error_style.render_reset();
-            // let error_style = error_style.render();
 
             let now = Local::now();
 
