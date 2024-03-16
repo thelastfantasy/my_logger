@@ -2,6 +2,7 @@ use chrono::Local;
 use env_logger::Builder as LoggerBuilder;
 use std::io::Write;
 
+/// 执行Logger构建, 使用 `log::info!("...")`, `log::error!("...")`, `log::warn!("...")` 等方式输出日志
 pub fn init() {
     LoggerBuilder::new()
         .format(|buf, record| {
