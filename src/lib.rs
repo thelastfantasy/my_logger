@@ -1,34 +1,45 @@
 use chrono::Local;
 use env_logger::Builder as LoggerBuilder;
-use std::io::Write;
+use log::{Level, LevelFilter};
+use std::io::{self, Write};
 
 /// 执行Logger构建, 使用 `log::info!("...")`, `log::error!("...")`, `log::warn!("...")` 等方式输出日志
 pub fn init() {
     LoggerBuilder::new()
         .format(|buf, record| {
+            // 获取默认的日志级别样式
             let level_style = buf.default_level_style(record.level());
+            // 渲染复位样式
             let reset = level_style.render_reset();
+            // 渲染级别样式
             let level_style = level_style.render();
-
+            // 获取当前时间
             let now = Local::now();
 
+            // 格式化日志信息
             let message = format!("{}", record.args());
-
-            if message.trim().is_empty() {
-                // 如果消息体为空，则输出一个空行或自定义的空消息格式
-                writeln!(buf)
+            let formatted_message = if message.trim().is_empty() {
+                // 如果消息体为空，则选择输出无日期和输出级别的空字符串或者特定格式
+                String::new()
             } else {
-                // 否则，按常规方式输出日志消息
-                writeln!(
-                    buf,
-                    "{} {} {level_style}{}{reset}  - {}",
+                format!(
+                    "{} {} {}{}{}  - {}",
                     now.format("%Y-%m-%d"),
                     now.format("%H:%M:%S"),
-                    format!("[{}]", record.level()),
+                    level_style,
+                    record.level(),
+                    reset,
                     message
                 )
+            };
+
+            // 根据日志级别确定输出目标，并写入
+            if record.level() == Level::Info {
+                writeln!(io::stdout(), "{}", formatted_message)
+            } else {
+                writeln!(io::stderr(), "{}", formatted_message)
             }
         })
-        .filter_level(log::LevelFilter::Info)
-        .init(); // ...
+        .filter_level(LevelFilter::Info)
+        .init();
 }
