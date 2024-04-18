@@ -4,6 +4,10 @@ use log::{Level, LevelFilter};
 use std::io::{self, Write};
 
 /// 执行Logger构建, 使用 `log::info!("...")`, `log::error!("...")`, `log::warn!("...")` 等方式输出日志
+///
+/// 代码中使用了ANSI颜色输出，所以重定向日志输出到文件时，日志文件中可能会出现乱码，请无视
+///
+/// info级别的日志输出到stdout，其他级别的日志输出到stderr
 pub fn init() {
     LoggerBuilder::new()
         .format(|buf, record| {
